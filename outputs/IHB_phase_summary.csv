@@ -1,0 +1,9 @@
+phase,n,mean_ms,sd_ms,ci_low,ci_high,pct_vs_baseline
+Pre-event baseline,775,79.5,23.5,77.8,81.1,0.0
+First trimester,91,76.9,20.9,72.6,81.2,-3.3
+Second trimester,88,62.5,18.5,58.6,66.3,-21.4
+Third trimester,90,58.8,31.3,52.3,65.3,-26.0
+Early postpartum,83,55.7,11.7,53.2,58.2,-29.9
+Mid postpartum,89,70.2,16.0,66.9,73.6,-11.7
+Post-weaning,179,90.9,21.2,87.8,94.0,14.3
+Late postpartum,318,100.1,23.5,97.5,102.6,25.9
