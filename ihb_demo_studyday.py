@@ -34,7 +34,7 @@ df = pd.read_csv(DATA_FILE).sort_values("study_day").reset_index(drop=True)
 d = df[df["study_day"] <= FREEZE_DAY].copy()
 valid = int(d["hrv_rmssd"].notna().sum())
 
-# Phase boundaries in study-day units (clinically anchored, defined a priori)
+# Phase boundaries in study-day units (standard clinical boundaries: trimesters, postpartum intervals, weaning)
 PHASES = [
     ("Pre-event baseline", d["study_day"].min(), LMP_DAY),
     ("First trimester",    LMP_DAY,        LMP_DAY+91),
