@@ -23,7 +23,7 @@ PROXY DATASET
 -------------
 Selected under the challenge "Bring Your Own Data" provision (Official Rules
 Section 7.1). The dataset is an astronaut-analog control: a healthy, active,
-non-smoking adult monitored continuously across a pre-event baseline, a
+adult monitored continuously under free-living conditions across a pre-event baseline, a
 defined extreme physiological event, and an extended recovery — the
 pre/during/post arc the challenge targets, with the strongly preferred
 longitudinal (within-individual) structure.
@@ -31,8 +31,10 @@ longitudinal (within-individual) structure.
   Instrument        : Oura Ring Gen 3, nightly rMSSD (ECG-validated, r^2 = 0.98)
   Indexing          : study day relative to event onset (Day 0)
   Canonical window  : study days up to +709 (frozen at 2026-02-27, the publication cutoff)
-  Valid nights      : 1,713 with valid nightly rMSSD across eight phases
-  Pharmacological   : none across the entire 65-month window
+  Window            : ~1,815 nights (frozen at 2026-02-27 publication cutoff)
+  Valid nights      : 1,713 with valid nightly rMSSD (94.4% complete)
+  Study design      : free-living, non-interventional; no ongoing clinical
+                      management of the subject's physiology
   Preprocessing     : raw nightly values; no interpolation or synthetic fill
   Peer review       : findings published at ACM BCB 2026 (see citation below)
 
