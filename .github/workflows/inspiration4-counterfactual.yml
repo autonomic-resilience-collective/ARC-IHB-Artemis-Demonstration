@@ -1,0 +1,37 @@
+name: Inspiration4 Frozen IHB Counterfactual
+
+on:
+  push:
+    branches:
+      - counterfactual/inspiration4-frozen-ihb
+    paths:
+      - 'counterfactual/inspiration4/**'
+      - '.github/workflows/inspiration4-counterfactual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frozen-ihb-fastpass:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout counterfactual branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deterministic analysis dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=2.0,<3' 'pandas>=2.2,<3'
+      - name: Run frozen IHB on public Inspiration4 fast-pass table
+        run: python counterfactual/inspiration4/run_frozen_ihb.py
+      - name: Show audit record
+        run: cat counterfactual/inspiration4/outputs/audit.json
+      - name: Upload counterfactual outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ihb-inspiration4-frozen-fastpass
+          path: counterfactual/inspiration4/outputs/
+          if-no-files-found: error
+          retention-days: 30
