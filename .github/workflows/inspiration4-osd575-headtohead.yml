@@ -35,6 +35,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ihb-vs-first-place-osd575-headtohead
-          path: counterfactual/inspiration4/headtohead_outputs/
+          path: |
+            counterfactual/inspiration4/headtohead_outputs/
+            counterfactual/inspiration4/headtohead_source/
           if-no-files-found: error
           retention-days: 30
