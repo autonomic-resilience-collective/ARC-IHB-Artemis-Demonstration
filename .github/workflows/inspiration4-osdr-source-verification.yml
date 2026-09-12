@@ -1,0 +1,47 @@
+name: Inspiration4 NASA OSDR Source Verification
+
+on:
+  push:
+    branches:
+      - counterfactual/inspiration4-frozen-ihb
+    paths:
+      - 'counterfactual/inspiration4/verify_nasa_osdr_sources.py'
+      - 'counterfactual/inspiration4/SOURCE_VERIFY_REQUEST.md'
+      - '.github/workflows/inspiration4-osdr-source-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-rerun:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout counterfactual branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install analysis dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=2.0,<3' 'pandas>=2.2,<3'
+      - name: Rebuild table from NASA OSDR and verify fast-pass values
+        run: python counterfactual/inspiration4/verify_nasa_osdr_sources.py
+      - name: Run frozen IHB directly on NASA OSDR reconstruction
+        run: >-
+          python counterfactual/inspiration4/run_frozen_ihb.py
+          --input counterfactual/inspiration4/source_verification/NASA_OSDR_source_master.csv
+          --outdir counterfactual/inspiration4/source_outputs
+      - name: Show source comparison
+        run: cat counterfactual/inspiration4/source_verification/source_comparison.json
+      - name: Show NASA-source IHB summary
+        run: cat counterfactual/inspiration4/source_outputs/IHB_Inspiration4_subject_summary.csv
+      - name: Upload source-verification bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ihb-inspiration4-nasa-osdr-source-verification
+          path: |
+            counterfactual/inspiration4/source_verification/
+            counterfactual/inspiration4/source_outputs/
+          if-no-files-found: error
+          retention-days: 30
