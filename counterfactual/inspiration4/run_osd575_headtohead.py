@@ -23,7 +23,8 @@ SUBJECTS=["C001","C002","C003","C004"]
 BASE=["L-92","L-44","L-3"]
 POST=["R+1","R+45","R+82","R+194"]
 TPS=BASE+POST
-SAMPLE_RE=re.compile(r"(C00[1-4])[ _-]?(?:[a-z\-]+[_ -])?(L-92|L-44|L-3|R\+1|R\+45|R\+82|R\+194)",re.I)
+# Longest R+ token must come before R+1; otherwise R+194 is prefix-matched as R+1.
+SAMPLE_RE=re.compile(r"(C00[1-4])[ _-]?(?:[a-z\-]+[_ -])?(L-92|L-44|L-3|R\+194|R\+45|R\+82|R\+1)(?:$|[_ -])",re.I)
 FILES=[
  (re.compile(r"AlamarPanel_TRANSFORMED\.csv$",re.I),"alamar","Immune-Alamar"),
  (re.compile(r"CMP_TRANSFORMED\.csv$",re.I),"cmp","CMP"),
@@ -153,6 +154,9 @@ def subject_summary(traj):
 def main():
  root=Path("counterfactual/inspiration4/headtohead_source");out=Path("counterfactual/inspiration4/headtohead_outputs");out.mkdir(parents=True,exist_ok=True)
  records=osdr_files(root);master=build_master(records);master.to_csv(out/"NASA_OSD575_7timepoint_302analyte_master.csv")
+ # Guard against silent timepoint parsing failures before any result is accepted.
+ per_tp=master.notna().sum(axis=1).groupby(level="timepoint").sum().to_dict()
+ if per_tp.get("R+194",0) == 0: raise SystemExit("R+194 parsed with zero measurements; source ingestion failed")
  traj=analyze(master);traj.to_csv(out/"IHB_OSD575_7timepoint_feature_trajectories.csv",index=False)
  ss=subject_summary(traj);ss.to_csv(out/"IHB_OSD575_subject_recovery_summary.csv",index=False)
  sigpath=dl(WIN_SIG,out/"first_place_i4_acute_signature.csv"); recpath=dl(WIN_REC,out/"first_place_i4_recovery_summary.csv")
@@ -163,7 +167,8 @@ def main():
           "features_with_ihb_threshold_in_at_least_2_crew":int((g.n_ihb_abs_z_ge2>=2).sum()),
           "direction_agreements":int(g.n_direction_agree.sum()),"direction_comparisons":int(g.n_evaluable.sum())}
  report={"analysis":"Frozen IHB vs public first-place OSD-575 centerpiece","n_subjects":4,"n_timepoints":7,"timepoints":TPS,
-         "n_measurement_features":int(len(master.columns)),"nasa_files":records,"top9":score(top9),"winner_signature_26":score(allsig),
+         "n_measurement_features":int(len(master.columns)),"nonmissing_measurements_by_timepoint":{k:int(v) for k,v in per_tp.items()},
+         "nasa_files":records,"top9":score(top9),"winner_signature_26":score(allsig),
          "first_place_signature_source":WIN_SIG,"first_place_recovery_source":WIN_REC,
          "interpretation_boundary":"Winner cohort-level effect/inference and IHB subject-level deviation are different estimands. Concordance is descriptive, not a placement score."}
  (out/"headtohead_summary.json").write_text(json.dumps(report,indent=2),encoding="utf-8")
